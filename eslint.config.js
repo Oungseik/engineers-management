@@ -10,10 +10,10 @@ export default [
   eslintConfigPrettier,
   ...tseslint.configs.recommended,
   {
-    files: ["**/*.{js,mjs,cjs,ts,mts}"],
     plugins: {
       "simple-import-sort": simpleImportSort,
     },
+    files: ["src/**/*.{js,mjs,cjs,ts,mts}"],
     rules: {
       "no-console": "warn",
       "no-debugger": "error",
@@ -35,6 +35,6 @@ export default [
     },
   },
   {
-    ignores: ["node_modules/", "dist/", "build/"],
+    ignores: ["node_modules/", "dist/", "build/", "sourcemap_support.js"],
   },
 ];
