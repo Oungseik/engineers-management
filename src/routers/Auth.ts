@@ -2,8 +2,9 @@ import { HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGroup, OpenApi } from 
 import { SqliteDrizzle } from "@effect/sql-drizzle/Sqlite";
 import { Effect, Schema as S } from "effect";
 
-import { BadRequest } from "@/lib/HttpErrors";
+import { InternalServerError, UnprocessableContent } from "@/lib/HttpErrors";
 import { engineers } from "@/schemas/sqlite";
+import { Hashing } from "@/services/Hashing";
 
 const EmailSchema = S.NonEmptyString;
 
@@ -19,7 +20,8 @@ export const EngineersGroup = HttpApiGroup.make("authentication")
         }),
       )
       .addSuccess(S.Struct({ email: EmailSchema, name: S.NonEmptyString }))
-      .addError(BadRequest)
+      .addError(UnprocessableContent)
+      .addError(InternalServerError)
       .annotateContext(
         OpenApi.annotations({
           title: "Register Engineer",
@@ -43,12 +45,24 @@ export const EngineerApiLive = HttpApiBuilder.group(EngineerApi, "authentication
   handlers.handle("register engineer", ({ payload }) =>
     Effect.gen(function* () {
       const db = yield* SqliteDrizzle;
+      const { hash } = yield* Hashing;
+
+      const password = yield* hash(payload.password).pipe(
+        Effect.catchAll(() => new InternalServerError({ message: "something went wrong" })),
+      );
+
       yield* db
         .insert(engineers)
-        .values({ ...payload })
+        .values({ ...payload, password })
         .pipe(
-          Effect.catchAll(() =>
-            Effect.fail(new BadRequest({ message: "Already created account with provided email" })),
+          Effect.catchIf(
+            (e) => (e.cause as Record<string, string>).code === "SQLITE_CONSTRAINT_UNIQUE",
+            () =>
+              new UnprocessableContent({ message: "Already created account with provided email" }),
+          ),
+          Effect.catchTag(
+            "SqlError",
+            () => new InternalServerError({ message: "something went wrong" }),
           ),
         );
       return { ...payload };

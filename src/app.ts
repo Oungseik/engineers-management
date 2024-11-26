@@ -8,8 +8,11 @@ import {
 import { BunHttpServer, BunRuntime } from "@effect/platform-bun";
 import { Effect, Layer } from "effect";
 
-import { CheckHealthApiLive, CheckHealthGroup, EngineerApiLive,EngineersGroup } from "./routers";
-import { config } from "./services/Config";
+import { config } from "@/services/Config";
+import { SqliteDbLive } from "@/services/Database";
+import { Argon2HashingLive } from "@/services/Hashing";
+
+import { CheckHealthApiLive, CheckHealthGroup, EngineerApiLive, EngineersGroup } from "./routers";
 
 const api = HttpApi.empty.add(CheckHealthGroup).add(EngineersGroup);
 
@@ -25,6 +28,8 @@ const HttpLive = Effect.gen(function* () {
     Layer.provide(HttpApiBuilder.middlewareCors()),
     Layer.provide(Main),
     HttpServer.withLogAddress,
+    Layer.provide(SqliteDbLive),
+    Layer.provide(Argon2HashingLive),
     Layer.provide(BunHttpServer.layer({ port })),
   );
 });
