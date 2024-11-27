@@ -13,13 +13,22 @@ import { SqliteDbLive } from "@/services/Database";
 import { Argon2HashingLive } from "@/services/Hashing";
 import { JwtLive } from "@/services/Jwt";
 
-import { CheckHealthApiLive, CheckHealthGroup, EngineerApiLive, EngineersGroup } from "./routers";
+import { AuthorizationLive } from "./lib/Middlewares";
+import {
+  AuthApiLive,
+  AuthGroup,
+  CheckHealthApiLive,
+  CheckHealthGroup,
+  EngineersApiLive,
+  EngineersGroup,
+} from "./routers";
 
-const api = HttpApi.empty.add(CheckHealthGroup).add(EngineersGroup);
+const api = HttpApi.empty.add(CheckHealthGroup).add(AuthGroup).add(EngineersGroup);
 
 const Main = HttpApiBuilder.api(api).pipe(
   Layer.provide(CheckHealthApiLive),
-  Layer.provide(EngineerApiLive),
+  Layer.provide(AuthApiLive),
+  Layer.provide(EngineersApiLive),
 );
 
 export const HttpLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
@@ -27,6 +36,7 @@ export const HttpLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
   Layer.provide(HttpApiBuilder.middlewareCors()),
   Layer.provide(Main),
   HttpServer.withLogAddress,
+  Layer.provide(AuthorizationLive),
   Layer.provide(SqliteDbLive),
   Layer.provide(Argon2HashingLive),
   Layer.provide(JwtLive),

@@ -45,7 +45,7 @@ const loginEngineerEndpoint = HttpApiEndpoint.post("log-in engineer", "/api/auth
     }),
   );
 
-export const EngineersGroup = HttpApiGroup.make("authentication")
+export const AuthGroup = HttpApiGroup.make("authentication")
   .add(registerEngineerEndpoint)
   .add(loginEngineerEndpoint)
   .annotateContext(
@@ -55,12 +55,12 @@ export const EngineersGroup = HttpApiGroup.make("authentication")
     }),
   );
 
-const EngineerApi = HttpApi.empty.add(EngineersGroup);
+const AuthApi = HttpApi.empty.add(AuthGroup);
 
 // --------------------------------------------
 // Implementation
 // --------------------------------------------
-export const EngineerApiLive = HttpApiBuilder.group(EngineerApi, "authentication", (handlers) =>
+export const AuthApiLive = HttpApiBuilder.group(AuthApi, "authentication", (handlers) =>
   handlers
     .handle("register engineer", ({ payload }) =>
       Ef.gen(function* () {
