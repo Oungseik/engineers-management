@@ -11,6 +11,7 @@ import { Effect, Layer } from "effect";
 import { config } from "@/services/Config";
 import { SqliteDbLive } from "@/services/Database";
 import { Argon2HashingLive } from "@/services/Hashing";
+import { JwtLive } from "@/services/Jwt";
 
 import { CheckHealthApiLive, CheckHealthGroup, EngineerApiLive, EngineersGroup } from "./routers";
 
@@ -21,18 +22,22 @@ const Main = HttpApiBuilder.api(api).pipe(
   Layer.provide(EngineerApiLive),
 );
 
-const HttpLive = Effect.gen(function* () {
+export const HttpLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
+  Layer.provide(HttpApiSwagger.layer({ path: "/docs" })),
+  Layer.provide(HttpApiBuilder.middlewareCors()),
+  Layer.provide(Main),
+  HttpServer.withLogAddress,
+  Layer.provide(SqliteDbLive),
+  Layer.provide(Argon2HashingLive),
+  Layer.provide(JwtLive),
+);
+
+// ------------------------------------------------------------
+// Setup bun server and run (you can replace with node runtime)
+// ------------------------------------------------------------
+const bunServer = Effect.gen(function* () {
   const { port } = yield* config;
-  return HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
-    Layer.provide(HttpApiSwagger.layer({ path: "/docs" })),
-    Layer.provide(HttpApiBuilder.middlewareCors()),
-    Layer.provide(Main),
-    HttpServer.withLogAddress,
-    Layer.provide(SqliteDbLive),
-    Layer.provide(Argon2HashingLive),
-    Layer.provide(JwtLive),
-    Layer.provide(BunHttpServer.layer({ port })),
-  );
+  return HttpLive.pipe(Layer.provide(BunHttpServer.layer({ port })));
 });
 
-HttpLive.pipe(Layer.unwrapEffect, Layer.launch, BunRuntime.runMain);
+bunServer.pipe(Layer.unwrapEffect, Layer.launch, BunRuntime.runMain);
