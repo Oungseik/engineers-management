@@ -30,6 +30,7 @@ const HttpLive = Effect.gen(function* () {
     HttpServer.withLogAddress,
     Layer.provide(SqliteDbLive),
     Layer.provide(Argon2HashingLive),
+    Layer.provide(JwtLive),
     Layer.provide(BunHttpServer.layer({ port })),
   );
 });
