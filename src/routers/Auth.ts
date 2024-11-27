@@ -68,7 +68,7 @@ export const EngineerApiLive = HttpApiBuilder.group(EngineerApi, "authentication
         const { hash } = yield* Hashing;
 
         const password = yield* hash(payload.password).pipe(
-          Ef.catchAll(() => new InternalServerError({ message: "something went wrong" })),
+          Ef.mapError(() => new InternalServerError({ message: "something went wrong" })),
         );
 
         yield* db
@@ -99,7 +99,7 @@ export const EngineerApiLive = HttpApiBuilder.group(EngineerApi, "authentication
           .select()
           .from(engineers)
           .where(eq(engineers.email, payload.email))
-          .pipe(Ef.catchAll(() => new InternalServerError({ message: "something went wrong" })));
+          .pipe(Ef.mapError(() => new InternalServerError({ message: "something went wrong" })));
 
         if (results.length === 0) {
           yield* new NotFound({ message: "engineer does not exist" });
@@ -107,7 +107,7 @@ export const EngineerApiLive = HttpApiBuilder.group(EngineerApi, "authentication
 
         const token = yield* jwt
           .sign({ email: payload.email })
-          .pipe(Ef.catchAll(() => new InternalServerError({ message: "something went wrong " })));
+          .pipe(Ef.mapError(() => new InternalServerError({ message: "something went wrong " })));
 
         return { token };
       }),
