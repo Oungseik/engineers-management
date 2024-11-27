@@ -1,4 +1,4 @@
-POST http://localhost:{{port}}/api/auth/login/engineer
+POST http://localhost:{{port}}/api/auth/engineers/login
 {
   "email": "oung@gmail.com",
   "password": "hello, world"

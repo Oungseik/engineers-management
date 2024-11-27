@@ -12,7 +12,7 @@ const EmailSchema = S.NonEmptyString;
 
 const registerEngineerEndpoint = HttpApiEndpoint.post(
   "register engineer",
-  "/api/auth/register/engineer",
+  "/api/auth/engineers/register",
 )
   .setPayload(
     S.Struct({
@@ -32,7 +32,7 @@ const registerEngineerEndpoint = HttpApiEndpoint.post(
     }),
   );
 
-const loginEngineerEndpoint = HttpApiEndpoint.post("log-in engineer", "/api/auth/login/engineer")
+const loginEngineerEndpoint = HttpApiEndpoint.post("log-in engineer", "/api/auth/engineers/login")
   .setPayload(S.Struct({ email: EmailSchema, password: S.NonEmptyString }))
   .addSuccess(S.Struct({ token: S.String }))
   .addError(NotFound)
