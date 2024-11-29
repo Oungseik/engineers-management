@@ -1,16 +1,11 @@
 import { HttpApi, HttpApiBuilder } from "@effect/platform";
 import { Layer } from "effect";
 
-import {
-  AuthApiLive,
-  AuthGroup,
-  CheckHealthApiLive,
-  CheckHealthGroup,
-  EngineersApiLive,
-  EngineersGroup,
-} from "./routers";
+import { AuthApi, AuthApiLive } from "./Api/Auth";
+import { CheckHealthApi, CheckHealthApiLive } from "./Api/CheckHealth";
+import { EngineersApi, EngineersApiLive } from "./Api/Engineers";
 
-export const Api = HttpApi.empty.add(CheckHealthGroup).add(AuthGroup).add(EngineersGroup);
+export const Api = HttpApi.empty.add(CheckHealthApi).add(AuthApi).add(EngineersApi);
 
 export const ApiLive = HttpApiBuilder.api(Api).pipe(
   Layer.provide(CheckHealthApiLive),

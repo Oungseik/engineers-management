@@ -7,8 +7,8 @@ import { SqliteDbLive } from "@/services/Database";
 import { Argon2HashingLive } from "@/services/Hashing";
 import { JwtLive } from "@/services/Jwt";
 
-import { AuthorizationLive } from "./lib/Middlewares";
 import { ApiLive } from "./Api";
+import { AuthorizationLive } from "./lib/Middlewares";
 
 const FsLive = BunFileSystem.layer;
 

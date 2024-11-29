@@ -1,66 +1,18 @@
-import { HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGroup, OpenApi } from "@effect/platform";
+import { HttpApi, HttpApiBuilder } from "@effect/platform";
 import { SqliteDrizzle } from "@effect/sql-drizzle/Sqlite";
 import { eq } from "drizzle-orm";
-import { Effect as Ef, Schema as S } from "effect";
+import { Effect as Ef } from "effect";
 
 import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
 import { engineers } from "@/schemas/sqlite";
 import { Hashing } from "@/services/Hashing";
 import { Jwt } from "@/services/Jwt";
 
-const EmailSchema = S.NonEmptyString;
+import { AuthApi } from "./Api";
 
-const registerEngineerEndpoint = HttpApiEndpoint.post(
-  "register engineer",
-  "/api/auth/engineers/register",
-)
-  .setPayload(
-    S.Struct({
-      name: S.NonEmptyString,
-      email: EmailSchema,
-      password: S.NonEmptyString,
-      nationality: S.String,
-    }),
-  )
-  .addSuccess(S.Struct({ email: EmailSchema, name: S.NonEmptyString }))
-  .addError(UnprocessableContent)
-  .addError(InternalServerError)
-  .annotateContext(
-    OpenApi.annotations({
-      title: "Register Engineer",
-      description: "API endpoint to register a new engineer",
-    }),
-  );
+const Api = HttpApi.empty.add(AuthApi);
 
-const loginEngineerEndpoint = HttpApiEndpoint.post("log-in engineer", "/api/auth/engineers/login")
-  .setPayload(S.Struct({ email: EmailSchema, password: S.NonEmptyString }))
-  .addSuccess(S.Struct({ token: S.String }))
-  .addError(NotFound)
-  .addError(UnprocessableContent)
-  .addError(InternalServerError)
-  .annotateContext(
-    OpenApi.annotations({
-      title: "Log-in Engineer",
-      description: "API endpoint to log-in as an engineer.",
-    }),
-  );
-
-export const AuthGroup = HttpApiGroup.make("authentication")
-  .add(registerEngineerEndpoint)
-  .add(loginEngineerEndpoint)
-  .annotateContext(
-    OpenApi.annotations({
-      title: "Authentication APIs",
-      description: "APIs to do authentication stuffs like register, sign-in and sign-out.",
-    }),
-  );
-
-const AuthApi = HttpApi.empty.add(AuthGroup);
-
-// --------------------------------------------
-// Implementation
-// --------------------------------------------
-export const AuthApiLive = HttpApiBuilder.group(AuthApi, "authentication", (handlers) =>
+export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers) =>
   handlers
     .handle("register engineer", ({ payload }) =>
       Ef.gen(function* () {
