@@ -16,7 +16,6 @@ const getMeEndpoint = HttpApiEndpoint.get("get self info", "/me")
   .addSuccess(Engineer)
   .addError(NotFound)
   .addError(InternalServerError)
-  .middleware(Authorization)
   .annotateContext(
     OpenApi.annotations({
       title: "self info",
@@ -33,10 +32,9 @@ const updateMeEndpoint = HttpApiEndpoint.post("update self info", "/me")
       selfIntro: S.NonEmptyString.pipe(S.optional),
     }),
   )
-  .addSuccess(Engineer)
+  .addSuccess(S.Struct({ success: S.Boolean }))
   .addError(NotFound)
   .addError(InternalServerError)
-  .middleware(Authorization)
   .annotateContext(
     OpenApi.annotations({
       title: "update self info",
@@ -48,7 +46,6 @@ const uploadProfileEndpoint = HttpApiEndpoint.post("upload profile picture", "/m
   .setPayload(HttpApiSchema.Multipart(S.Struct({ files: Multipart.FileSchema })))
   .addSuccess(S.Struct({ success: S.Boolean }))
   .addError(InternalServerError)
-  .middleware(Authorization)
   .annotateContext(
     OpenApi.annotations({
       title: "upload profile pic",
@@ -60,6 +57,7 @@ export const EngineersApi = HttpApiGroup.make("engineers")
   .add(getMeEndpoint)
   .add(updateMeEndpoint)
   .add(uploadProfileEndpoint)
+  .middleware(Authorization)
   .prefix("/api/engineers")
   .annotateContext(
     OpenApi.annotations({

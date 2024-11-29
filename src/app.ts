@@ -1,5 +1,5 @@
 import { HttpApiBuilder, HttpApiSwagger, HttpMiddleware, HttpServer } from "@effect/platform";
-import { BunFileSystem, BunHttpServer, BunRuntime } from "@effect/platform-bun";
+import { BunHttpServer, BunRuntime } from "@effect/platform-bun";
 import { Effect, Layer } from "effect";
 
 import { config } from "@/services/Config";
@@ -9,8 +9,6 @@ import { JwtLive } from "@/services/Jwt";
 
 import { ApiLive } from "./Api";
 import { AuthorizationLive } from "./lib/Middlewares";
-
-const FsLive = BunFileSystem.layer;
 
 export const HttpLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
   Layer.provide(HttpApiSwagger.layer({ path: "/docs" })),
@@ -22,7 +20,6 @@ export const HttpLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
   Layer.provide(SqliteDbLive),
   Layer.provide(Argon2HashingLive),
   Layer.provide(JwtLive),
-  Layer.provide(FsLive),
 );
 
 // ------------------------------------------------------------

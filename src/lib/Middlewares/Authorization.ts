@@ -1,7 +1,7 @@
 import { HttpApiMiddleware, HttpApiSecurity } from "@effect/platform";
 import { SqliteDrizzle } from "@effect/sql-drizzle/Sqlite";
 import { eq } from "drizzle-orm";
-import { Context, Effect, Layer, Redacted,Schema as S } from "effect";
+import { Context, Effect, Layer, Redacted, Schema as S } from "effect";
 
 import { engineers } from "@/schemas/sqlite";
 import { Jwt } from "@/services/Jwt";
@@ -11,8 +11,8 @@ import { Unauthorized } from "../HttpErrors";
 class User extends S.Class<User>("User")({
   id: S.Number,
   email: S.NonEmptyString,
-  name: S.NonEmptyString,
 }) {}
+
 export class CurrentUser extends Context.Tag("CurrentUser")<CurrentUser, User>() {}
 
 export class Authorization extends HttpApiMiddleware.Tag<Authorization>()("Authorization", {
@@ -52,7 +52,7 @@ export const AuthorizationLive = Layer.effect(
             Effect.mapError(() => new Unauthorized({ message: "invalid token" })),
           );
 
-          return new User({ ...user });
+          return new User({ email: user.email, id: user.id });
         }),
     });
   }),
