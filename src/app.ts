@@ -1,11 +1,5 @@
-import {
-  HttpApi,
-  HttpApiBuilder,
-  HttpApiSwagger,
-  HttpMiddleware,
-  HttpServer,
-} from "@effect/platform";
-import { BunHttpServer, BunRuntime } from "@effect/platform-bun";
+import { HttpApiBuilder, HttpApiSwagger, HttpMiddleware, HttpServer } from "@effect/platform";
+import { BunFileSystem, BunHttpServer, BunRuntime } from "@effect/platform-bun";
 import { Effect, Layer } from "effect";
 
 import { config } from "@/services/Config";
@@ -14,32 +8,21 @@ import { Argon2HashingLive } from "@/services/Hashing";
 import { JwtLive } from "@/services/Jwt";
 
 import { AuthorizationLive } from "./lib/Middlewares";
-import {
-  AuthApiLive,
-  AuthGroup,
-  CheckHealthApiLive,
-  CheckHealthGroup,
-  EngineersApiLive,
-  EngineersGroup,
-} from "./routers";
+import { ApiLive } from "./Api";
 
-const api = HttpApi.empty.add(CheckHealthGroup).add(AuthGroup).add(EngineersGroup);
-
-const Main = HttpApiBuilder.api(api).pipe(
-  Layer.provide(CheckHealthApiLive),
-  Layer.provide(AuthApiLive),
-  Layer.provide(EngineersApiLive),
-);
+const FsLive = BunFileSystem.layer;
 
 export const HttpLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
   Layer.provide(HttpApiSwagger.layer({ path: "/docs" })),
   Layer.provide(HttpApiBuilder.middlewareCors()),
-  Layer.provide(Main),
+  Layer.provide(HttpApiBuilder.middlewareOpenApi()),
+  Layer.provide(ApiLive),
   HttpServer.withLogAddress,
   Layer.provide(AuthorizationLive),
   Layer.provide(SqliteDbLive),
   Layer.provide(Argon2HashingLive),
   Layer.provide(JwtLive),
+  Layer.provide(FsLive),
 );
 
 // ------------------------------------------------------------
