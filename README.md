@@ -1,4 +1,4 @@
-# (Typescript + Effect-ts + Drizzle + Hono + Bun) Starter
+# (Typescript + Effect-ts + Drizzle + Bun) Starter
 
 <details>
 <summary>.env</summary>
