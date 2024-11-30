@@ -1,4 +1,4 @@
-import { HttpApi, HttpApiBuilder } from "@effect/platform";
+import { FileSystem, HttpApi, HttpApiBuilder } from "@effect/platform";
 import { SqliteDrizzle } from "@effect/sql-drizzle/Sqlite";
 import { eq } from "drizzle-orm";
 import { Effect as Ef, pipe } from "effect";
@@ -14,6 +14,7 @@ const Api = HttpApi.empty.add(EngineersApi);
 export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers) =>
   Ef.gen(function* () {
     const db = yield* SqliteDrizzle;
+    const fs = yield* FileSystem.FileSystem;
 
     return handlers
       .handle("get self info", () =>
@@ -40,6 +41,19 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
           Ef.mapError(() => new InternalServerError({ message: "something went wrong " })),
         ),
       )
-      .handle("upload profile picture", () => Ef.succeed({ success: true }));
+      .handle("upload profile picture", ({ payload: { file } }) =>
+        CurrentUser.pipe(
+          Ef.bindTo("user"),
+          Ef.bind("uinit8Array", () => fs.readFile(file.path)),
+          Ef.tap(({ user, uinit8Array }) =>
+            db
+              .update(engineers)
+              .set({ profilePic: Buffer.from(uinit8Array) })
+              .where(eq(engineers.email, user.email)),
+          ),
+          Ef.andThen({ success: true } as const),
+          Ef.catchAll((e) => new InternalServerError({ message: e.message })),
+        ),
+      );
   }),
 );

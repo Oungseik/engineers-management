@@ -4,11 +4,15 @@ import { Schema as S } from "effect";
 import { InternalServerError, NotFound } from "@/lib/HttpErrors";
 import { Authorization } from "@/lib/Middlewares";
 
+const BufferFromSelf = S.declare((input: unknown): input is Buffer => input instanceof Buffer, {
+  identifier: "BufferFromSelf",
+});
+
 const Engineer = S.Struct({
   name: S.NonEmptyString,
   email: S.NonEmptyString,
   nationality: S.NonEmptyString,
-  profilePic: S.String.pipe(S.NullOr),
+  profilePic: BufferFromSelf.pipe(S.NullOr),
   selfIntro: S.String.pipe(S.NullOr),
 });
 
@@ -43,8 +47,8 @@ const updateMeEndpoint = HttpApiEndpoint.post("update self info", "/me")
   );
 
 const uploadProfileEndpoint = HttpApiEndpoint.post("upload profile picture", "/me/profile/upload")
-  .setPayload(HttpApiSchema.Multipart(S.Struct({ files: Multipart.FileSchema })))
-  .addSuccess(S.Struct({ success: S.Boolean }))
+  .setPayload(HttpApiSchema.Multipart(S.Struct({ file: Multipart.FileSchema })))
+  .addSuccess(S.Struct({ success: S.Literal(true) }))
   .addError(InternalServerError)
   .annotateContext(
     OpenApi.annotations({

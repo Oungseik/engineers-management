@@ -7,7 +7,7 @@ export const engineers = D.sqliteTable("engineers", {
   email: D.text("email").unique().notNull(),
   password: D.text("password").notNull(),
   nationality: D.text("nationality").notNull(),
-  profilePic: D.text("profile_picture"),
+  profilePic: D.blob("profile_picture", { mode: "buffer" }),
   selfIntro: D.text("self_introduction"),
 });
 
