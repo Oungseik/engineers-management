@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 
-import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
+import { NodeHttpServer, NodeRuntime, NodeFileSystem } from "@effect/platform-node";
 import * as SqliteDrizzle from "@effect/sql-drizzle/Sqlite";
 import { SqliteClient } from "@effect/sql-sqlite-node";
 import { Effect } from "effect";
@@ -19,6 +19,7 @@ const DrizzleLive = SqliteDrizzle.layer.pipe(Layer.provide(SqlLive));
 const SqliteDbLive = Layer.mergeAll(SqlLive, DrizzleLive);
 
 HttpLive.pipe(
+  Layer.provide(NodeFileSystem.layer),
   Layer.provide(SqliteDbLive),
   Layer.provide(NodeHttpServer.layer(createServer, { port: 5000 })),
   Layer.launch,
