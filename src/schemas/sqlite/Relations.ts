@@ -12,7 +12,7 @@ export const engineersToSkills = D.sqliteTable(
   {
     engineerId: D.integer("engineer_id")
       .notNull()
-      .references(() => engineers.id),
+      .references(() => engineers.id, { onDelete: "cascade" }),
     skillId: D.integer("skill_id").references(() => skills.id),
   },
   (t) => ({ pk: D.primaryKey({ columns: [t.engineerId, t.skillId] }) }),
