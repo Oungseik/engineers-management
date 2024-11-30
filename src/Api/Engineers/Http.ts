@@ -23,6 +23,10 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
           Ef.flatMap((user) => db.select().from(engineers).where(eq(engineers.email, user.email))),
           Ef.map((engineers) => engineers.at(0)),
           Ef.flatMap(Ef.fromNullable),
+          Ef.map((engineer) => ({
+            ...engineer,
+            profilePic: engineer.profilePic?.toString("base64") ?? "",
+          })),
           Ef.catchTags({
             NoSuchElementException: () => new NotFound({ message: "user doesn't exist" }),
             SqlError: () => new InternalServerError({ message: "unexpected error occured" }),
@@ -41,10 +45,10 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
           Ef.mapError(() => new InternalServerError({ message: "something went wrong " })),
         ),
       )
-      .handle("upload profile picture", ({ payload: { file } }) =>
+      .handle("upload profile picture", ({ payload: { files } }) =>
         CurrentUser.pipe(
           Ef.bindTo("user"),
-          Ef.bind("uinit8Array", () => fs.readFile(file.path)),
+          Ef.bind("uinit8Array", () => fs.readFile(files[0].path)),
           Ef.tap(({ user, uinit8Array }) =>
             db
               .update(engineers)
