@@ -1,9 +1,6 @@
 import { HttpApiBuilder, HttpApiSwagger, HttpMiddleware, HttpServer } from "@effect/platform";
-import { BunHttpServer, BunRuntime } from "@effect/platform-bun";
-import { Effect, Layer } from "effect";
+import { Layer } from "effect";
 
-import { config } from "@/services/Config";
-import { SqliteDbLive } from "@/services/Database";
 import { Argon2HashingLive } from "@/services/Hashing";
 import { JwtLive } from "@/services/Jwt";
 
@@ -17,17 +14,6 @@ export const HttpLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
   Layer.provide(ApiLive),
   HttpServer.withLogAddress,
   Layer.provide(AuthorizationLive),
-  Layer.provide(SqliteDbLive),
   Layer.provide(Argon2HashingLive),
   Layer.provide(JwtLive),
 );
-
-// ------------------------------------------------------------
-// Setup bun server and run (you can replace with node runtime)
-// ------------------------------------------------------------
-const bunServer = Effect.gen(function* () {
-  const { port } = yield* config;
-  return HttpLive.pipe(Layer.provide(BunHttpServer.layer({ port })));
-});
-
-bunServer.pipe(Layer.unwrapEffect, Layer.launch, BunRuntime.runMain);

@@ -18,7 +18,7 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
             bun
-            nodejs_22
+            nodejs_20
             python3
           ];
 

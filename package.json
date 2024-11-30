@@ -1,10 +1,12 @@
 {
   "name": "starter",
-  "module": "src/index.ts",
+  "module": "src/app.ts",
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "dev": "bun run src/app.ts",
+    "dev:bun": "bun run src/bun.ts",
+    "dev:node": "tsx --env-file=.env src/node.ts",
+    "serve:node": "node dist/node.cjs",
     "format": "prettier -w ./src",
     "lint": "eslint",
     "generate": "drizzle-kit generate",
@@ -12,19 +14,20 @@
     "studio": "drizzle-kit studio"
   },
   "devDependencies": {
-    "@eslint/js": "^9.15.0",
+    "@eslint/js": "^9.16.0",
     "@types/bcrypt": "^5.0.2",
     "@types/bun": "latest",
     "@types/jsonwebtoken": "^9.0.7",
     "better-sqlite3": "^11.6.0",
     "drizzle-kit": "^0.26.2",
-    "eslint": "^9.15.0",
+    "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^15.12.0",
     "prettier": "^3.4.1",
     "source-map-support": "^0.5.21",
     "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.16.0"
   },
@@ -32,16 +35,18 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "@effect/platform": "^0.69.28",
-    "@effect/platform-bun": "^0.49.30",
-    "@effect/platform-node": "^0.64.30",
-    "@effect/sql": "^0.20.12",
-    "@effect/sql-drizzle": "^0.19.12",
-    "@effect/sql-sqlite-bun": "^0.19.5",
+    "@effect/experimental": "^0.32.13",
+    "@effect/platform": "^0.69.29",
+    "@effect/platform-bun": "^0.49.31",
+    "@effect/platform-node": "^0.64.31",
+    "@effect/sql": "^0.21.0",
+    "@effect/sql-drizzle": "^0.20.0",
+    "@effect/sql-sqlite-bun": "^0.22.0",
+    "@effect/sql-sqlite-node": "^0.22.0",
     "argon2": "^0.41.1",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.35.3",
+    "drizzle-orm": "^0.31.4",
     "effect": "^3.10.19",
     "jsonwebtoken": "^9.0.2"
   }
