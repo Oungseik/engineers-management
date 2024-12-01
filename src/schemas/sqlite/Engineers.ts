@@ -1,4 +1,3 @@
-import type { InferSelectModel } from "drizzle-orm";
 import * as D from "drizzle-orm/sqlite-core";
 
 export const engineers = D.sqliteTable("engineers", {
@@ -10,5 +9,3 @@ export const engineers = D.sqliteTable("engineers", {
   profilePic: D.blob("profile_picture", { mode: "buffer" }),
   selfIntro: D.text("self_introduction"),
 });
-
-export type Engineer = InferSelectModel<typeof engineers>;
