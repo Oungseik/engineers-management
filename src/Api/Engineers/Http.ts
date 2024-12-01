@@ -25,7 +25,7 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
           Ef.flatMap(Ef.fromNullable),
           Ef.map((engineer) => ({
             ...engineer,
-            profilePic: engineer.profilePic?.toString("base64") ?? "",
+            profilePic: "data:image/png;base64," + (engineer.profilePic?.toString("base64") ?? ""),
           })),
           Ef.catchTags({
             NoSuchElementException: () => new NotFound({ message: "user doesn't exist" }),
