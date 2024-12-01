@@ -1,10 +1,10 @@
 import { HttpApi, HttpApiBuilder } from "@effect/platform";
-import type { SqlError } from "@effect/sql";
 import { SqliteDrizzle } from "@effect/sql-drizzle/Sqlite";
 import { eq } from "drizzle-orm";
 import { Effect as Ef, pipe } from "effect";
 
-import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
+import { handleSqlError } from "@/lib/ErrorHelpers";
+import { InternalServerError, NotFound } from "@/lib/HttpErrors";
 import { engineers } from "@/schemas/sqlite";
 import { Hashing } from "@/services/Hashing";
 import { Jwt } from "@/services/Jwt";
@@ -12,16 +12,6 @@ import { Jwt } from "@/services/Jwt";
 import { AuthApi } from "./Api";
 
 const Api = HttpApi.empty.add(AuthApi);
-
-function isRecord(value: unknown): value is Record<string, string> {
-  return typeof value === "object";
-}
-
-function handleSqlError(e: SqlError.SqlError) {
-  return isRecord(e.cause) && e.cause.code === "SQLITE_CONSTRAINT_UNIQUE"
-    ? new UnprocessableContent({ message: "email already used" })
-    : new InternalServerError({ message: "something went wrong" });
-}
 
 export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers) =>
   Ef.gen(function* () {
