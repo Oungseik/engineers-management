@@ -5,7 +5,6 @@ title: Order example
 ```mermaid
 erDiagram
 
-    ENGINEERS }o--o{ SKILLS : "has"
     ENGINEERS || -- o{ EXPERIENCES : ""
     EXPERIENCES |o -- || SKILLS : "has"
 
