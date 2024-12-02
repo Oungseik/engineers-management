@@ -4,9 +4,9 @@ import { eq } from "drizzle-orm";
 import { Effect as Ef, pipe } from "effect";
 
 import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
+import { isRecord } from "@/lib/SqlErrors";
 import { CurrentUser } from "@/Middlewares";
 import { engineers, experiences, skills } from "@/schemas/sqlite";
-import { isRecord } from "@/lib/SqlErrors";
 
 import { EngineersApi } from "./Api";
 
