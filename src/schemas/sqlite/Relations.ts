@@ -21,11 +21,12 @@ export const engineersSkills = D.sqliteTable(
 
 export const engineersRelations = relations(engineers, ({ many }) => ({
   engineersToSkills: many(engineersSkills),
-  experiences: many(experiences),
+  engineersToExperiences: many(experiences),
 }));
 
 export const skillsRelations = relations(skills, ({ many }) => ({
-  engineersToSkills: many(engineersSkills),
+  skillsToEngineers: many(engineersSkills),
+  skillToExperiences: many(experiences),
 }));
 
 export const engineersToSkillsRelations = relations(engineersSkills, ({ one }) => ({

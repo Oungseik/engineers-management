@@ -3,10 +3,16 @@ import * as D from "drizzle-orm/sqlite-core";
 
 export const skillTags = ["programming language", "framework", "dev-tool"] as const;
 
-export const skills = D.sqliteTable("skills", {
-  id: D.integer("id").primaryKey({ autoIncrement: true }),
-  name: D.text("name").notNull().unique(),
-  tag: D.text("tag", { enum: skillTags }).notNull(),
-});
+export const skills = D.sqliteTable(
+  "skills",
+  {
+    id: D.integer("id").primaryKey({ autoIncrement: true }),
+    name: D.text("name").notNull().unique(),
+    tag: D.text("tag", { enum: skillTags }).notNull(),
+  },
+  (table) => ({
+    nameIdx: D.index("name_idx").on(table.name),
+  }),
+);
 
 export type Skill = InferSelectModel<typeof skills>;

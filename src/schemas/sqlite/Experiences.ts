@@ -1,4 +1,3 @@
-import { relations } from "drizzle-orm";
 import * as D from "drizzle-orm/sqlite-core";
 
 import { engineers } from "./Engineers";
@@ -14,14 +13,3 @@ export const experiences = D.sqliteTable("experiences", {
     .notNull()
     .references(() => skills.id, { onDelete: "set null" }),
 });
-
-export const experiencesRelations = relations(experiences, ({ one }) => ({
-  experiencesToEngineers: one(engineers, {
-    fields: [experiences.engineerId],
-    references: [engineers.id],
-  }),
-  experiencesToSkills: one(skills, {
-    fields: [experiences.skillId],
-    references: [skills.id],
-  }),
-}));
