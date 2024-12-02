@@ -53,10 +53,35 @@ const uploadProfileEndpoint = HttpApiEndpoint.post("upload profile picture", "/m
     }),
   );
 
+const getSkillsEndpoint = HttpApiEndpoint.get("get list of added skills", "/me/skills")
+  .addSuccess(
+    S.Array(S.Struct({ name: S.NonEmptyString, tag: S.NonEmptyString, yearsOfExp: S.Number })),
+  )
+  .addError(InternalServerError)
+  .annotateContext(
+    OpenApi.annotations({
+      title: "get added skills list",
+      description: "API endpoint to get the self skills list",
+    }),
+  );
+
+const addSkillsEndpoint = HttpApiEndpoint.post("add new skill in self skill list", "/me/skills/add")
+  .setPayload(S.Struct({ skillId: S.Number, yearsOfExp: S.Number }))
+  .addSuccess(S.Struct({ success: S.Literal(true) }))
+  .addError(InternalServerError)
+  .annotateContext(
+    OpenApi.annotations({
+      title: "add skill",
+      description: "API endpoint to add new skill in self skills list",
+    }),
+  );
+
 export const EngineersApi = HttpApiGroup.make("engineers")
   .add(getMeEndpoint)
   .add(updateMeEndpoint)
   .add(uploadProfileEndpoint)
+  .add(getSkillsEndpoint)
+  .add(addSkillsEndpoint)
   .middleware(Authorization)
   .prefix("/api/engineers")
   .annotateContext(

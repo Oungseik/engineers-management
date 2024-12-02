@@ -5,7 +5,7 @@ import { Effect as Ef, pipe } from "effect";
 
 import { InternalServerError, NotFound } from "@/lib/HttpErrors";
 import { CurrentUser } from "@/lib/Middlewares";
-import { engineers } from "@/schemas/sqlite";
+import { engineers, experiences, skills } from "@/schemas/sqlite";
 
 import { EngineersApi } from "./Api";
 
@@ -58,6 +58,35 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
           Ef.andThen({ success: true } as const),
           Ef.catchAll((e) => new InternalServerError({ message: e.message })),
         ),
+      )
+      .handle("get list of added skills", () =>
+        Ef.gen(function* () {
+          const user = yield* CurrentUser;
+          const result = yield* db
+            .select()
+            .from(experiences)
+            .leftJoin(skills, eq(skills.id, experiences.skillId))
+            .where(eq(experiences.engineerId, user.id))
+            .limit(1)
+            .pipe(Ef.mapError(() => new InternalServerError({ message: "something went wrong" })));
+
+          return result.map((r) => ({
+            name: r.skills?.name ?? "",
+            tag: r.skills?.tag ?? "",
+            yearsOfExp: r.experiences?.yearsOfExp ?? 0,
+          }));
+        }),
+      )
+      .handle("add new skill in self skill list", ({ payload }) =>
+        Ef.gen(function* () {
+          const user = yield* CurrentUser;
+          yield* db
+            .insert(experiences)
+            .values({ ...payload, engineerId: user.id })
+            .pipe(Ef.mapError(() => new InternalServerError({ message: "something went wrong" })));
+
+          return { success: true } as const;
+        }),
       );
   }),
 );
