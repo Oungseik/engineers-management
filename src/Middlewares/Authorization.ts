@@ -6,7 +6,7 @@ import { Context, Effect, Layer, Redacted, Schema as S } from "effect";
 import { engineers } from "@/schemas/sqlite";
 import { Jwt } from "@/services/Jwt";
 
-import { Unauthorized } from "../HttpErrors";
+import { Unauthorized } from "@/lib/HttpErrors";
 
 class User extends S.Class<User>("User")({
   id: S.Number,
