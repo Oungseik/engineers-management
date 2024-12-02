@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { Effect as Ef, pipe } from "effect";
 
 import { InternalServerError, NotFound } from "@/lib/HttpErrors";
-import { CurrentUser } from "@/lib/Middlewares";
+import { CurrentUser } from "@/Middlewares";
 import { engineers, experiences, skills } from "@/schemas/sqlite";
 
 import { EngineersApi } from "./Api";
@@ -83,7 +83,10 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
           yield* db
             .insert(experiences)
             .values({ ...payload, engineerId: user.id })
-            .pipe(Ef.mapError(() => new InternalServerError({ message: "something went wrong" })));
+            .pipe(
+              Ef.tapError(Ef.logError),
+              Ef.mapError(() => new InternalServerError({ message: "something went wrong" })),
+            );
 
           return { success: true } as const;
         }),

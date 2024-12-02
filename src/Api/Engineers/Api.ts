@@ -2,7 +2,7 @@ import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, Multipart, OpenApi } from
 import { Schema as S } from "effect";
 
 import { InternalServerError, NotFound } from "@/lib/HttpErrors";
-import { Authorization } from "@/lib/Middlewares";
+import { Authorization } from "@/Middlewares";
 
 const Engineer = S.Struct({
   name: S.NonEmptyString,

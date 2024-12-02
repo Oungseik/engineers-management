@@ -3,8 +3,8 @@ import { SqliteDrizzle } from "@effect/sql-drizzle/Sqlite";
 import { eq } from "drizzle-orm";
 import { Effect as Ef, pipe } from "effect";
 
-import { handleSqlError } from "@/lib/ErrorHelpers";
 import { InternalServerError, NotFound } from "@/lib/HttpErrors";
+import { handleSqlError } from "@/lib/SqlErrors";
 import { engineers } from "@/schemas/sqlite";
 import { Hashing } from "@/services/Hashing";
 import { Jwt } from "@/services/Jwt";
