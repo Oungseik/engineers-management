@@ -1,7 +1,7 @@
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, Multipart, OpenApi } from "@effect/platform";
 import { Schema as S } from "effect";
 
-import { InternalServerError, NotFound } from "@/lib/HttpErrors";
+import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
 import { Authorization } from "@/Middlewares";
 
 const Engineer = S.Struct({
@@ -68,6 +68,7 @@ const getSkillsEndpoint = HttpApiEndpoint.get("get list of added skills", "/me/s
 const addSkillsEndpoint = HttpApiEndpoint.post("add new skill in self skill list", "/me/skills/add")
   .setPayload(S.Struct({ skillId: S.Number, yearsOfExp: S.Number }))
   .addSuccess(S.Struct({ success: S.Literal(true) }))
+  .addError(UnprocessableContent)
   .addError(InternalServerError)
   .annotateContext(
     OpenApi.annotations({

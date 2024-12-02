@@ -3,9 +3,10 @@ import { SqliteDrizzle } from "@effect/sql-drizzle/Sqlite";
 import { eq } from "drizzle-orm";
 import { Effect as Ef, pipe } from "effect";
 
-import { InternalServerError, NotFound } from "@/lib/HttpErrors";
+import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
 import { CurrentUser } from "@/Middlewares";
 import { engineers, experiences, skills } from "@/schemas/sqlite";
+import { isRecord } from "@/lib/SqlErrors";
 
 import { EngineersApi } from "./Api";
 
@@ -84,8 +85,11 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
             .insert(experiences)
             .values({ ...payload, engineerId: user.id })
             .pipe(
-              Ef.tapError(Ef.logError),
-              Ef.mapError(() => new InternalServerError({ message: "something went wrong" })),
+              Ef.mapError((e) =>
+                isRecord(e.cause) && e.cause.code === "SQLITE_CONSTRAINT_PRIMARYKEY"
+                  ? new UnprocessableContent({ message: "skill duplicated" })
+                  : new InternalServerError({ message: "something went wrong" }),
+              ),
             );
 
           return { success: true } as const;

@@ -2,7 +2,7 @@ import { SqlError } from "@effect/sql";
 
 import { InternalServerError, UnprocessableContent } from "./HttpErrors";
 
-function isRecord(value: unknown): value is Record<string, string> {
+export function isRecord(value: unknown): value is Record<string, string> {
   return typeof value === "object";
 }
 
