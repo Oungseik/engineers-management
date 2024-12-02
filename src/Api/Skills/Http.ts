@@ -20,7 +20,6 @@ export const SkillsApiLive = HttpApiBuilder.group(Api, "skills", (handlers) =>
           .select()
           .from(skills)
           .pipe(
-            Effect.map((skills) => skills),
             Effect.catchAll(() => new InternalServerError({ message: "something went wrong" })),
           ),
       )
