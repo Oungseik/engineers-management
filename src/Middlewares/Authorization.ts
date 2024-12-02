@@ -1,55 +1,54 @@
 import { HttpApiMiddleware, HttpApiSecurity } from "@effect/platform";
 import { SqliteDrizzle } from "@effect/sql-drizzle/Sqlite";
 import { eq } from "drizzle-orm";
-import { Context, Effect, Layer, Redacted, Schema as S } from "effect";
+import { Context as C, Effect as Ef, Layer as L, Redacted, Schema as S } from "effect";
 
+import { InternalServerError, Unauthorized } from "@/lib/HttpErrors";
 import { engineers } from "@/schemas/sqlite";
 import { Jwt } from "@/services/Jwt";
-
-import { Unauthorized } from "@/lib/HttpErrors";
 
 class User extends S.Class<User>("User")({
   id: S.Number,
   email: S.NonEmptyString,
 }) {}
 
-export class CurrentUser extends Context.Tag("CurrentUser")<CurrentUser, User>() {}
+export class CurrentUser extends C.Tag("CurrentUser")<CurrentUser, User>() {}
 
 export class Authorization extends HttpApiMiddleware.Tag<Authorization>()("Authorization", {
-  failure: Unauthorized,
+  failure: S.Union(Unauthorized, InternalServerError),
   provides: CurrentUser,
   security: { token: HttpApiSecurity.bearer },
 }) {}
 
-export const AuthorizationLive = Layer.effect(
+export const AuthorizationLive = L.effect(
   Authorization,
-  Effect.gen(function* () {
-    yield* Effect.log("creating Authorization middleware");
+  Ef.gen(function* () {
+    yield* Ef.log("creating Authorization middleware");
     const { verify } = yield* Jwt;
     const db = yield* SqliteDrizzle;
 
     // return the security handlers
     return Authorization.of({
       token: (bearerToken) =>
-        Effect.gen(function* () {
-          yield* Effect.log("checking bearer token", Redacted.value(bearerToken));
+        Ef.gen(function* () {
+          yield* Ef.log("checking bearer token", Redacted.value(bearerToken));
           const token = Redacted.value(bearerToken);
           const result = yield* verify(token).pipe(
-            Effect.mapError(() => new Unauthorized({ message: "invalid token" })),
+            Ef.mapError(() => new Unauthorized({ message: "invalid token" })),
           );
 
-          const email: string = yield* Effect.fromNullable(result.email).pipe(
-            Effect.mapError(() => new Unauthorized({ message: "invalid token" })),
+          const email: string = yield* Ef.fromNullable(result.email).pipe(
+            Ef.mapError(() => new Unauthorized({ message: "invalid token" })),
           );
 
           const users = yield* db
             .select()
             .from(engineers)
             .where(eq(engineers.email, email))
-            .pipe(Effect.mapError(() => new Unauthorized({ message: "invalid token" })));
+            .pipe(Ef.mapError(() => new InternalServerError({ message: "something went wrong" })));
 
-          const user = yield* Effect.fromNullable(users.at(0)).pipe(
-            Effect.mapError(() => new Unauthorized({ message: "invalid token" })),
+          const user = yield* Ef.fromNullable(users.at(0)).pipe(
+            Ef.mapError(() => new Unauthorized({ message: "invalid token" })),
           );
 
           return new User({ email: user.email, id: user.id });
