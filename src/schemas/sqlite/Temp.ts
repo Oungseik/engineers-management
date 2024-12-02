@@ -31,12 +31,16 @@ export const skills = D.sqliteTable("skills", {
 //   (table) => ({ pk: D.primaryKey({ columns: [table.engineerId, table.skillId] }) }),
 // );
 
-export const experiences = D.sqliteTable("experiences", {
-  yearsOfExp: D.integer("years_of_experience").notNull(),
-  engineerId: D.integer("engineer_id")
-    .notNull()
-    .references(() => engineers.id),
-  skillId: D.integer("skill_id")
-    .notNull()
-    .references(() => skills.id),
-});
+export const experiences = D.sqliteTable(
+  "experiences",
+  {
+    yearsOfExp: D.integer("years_of_experience").notNull(),
+    engineerId: D.integer("engineer_id")
+      .notNull()
+      .references(() => engineers.id),
+    skillId: D.integer("skill_id")
+      .notNull()
+      .references(() => skills.id),
+  },
+  (table) => ({ pk: D.primaryKey({ columns: [table.engineerId, table.skillId] }) }),
+);
