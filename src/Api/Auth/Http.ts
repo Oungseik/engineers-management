@@ -5,7 +5,7 @@ import { Effect as Ef, pipe } from "effect";
 
 import { InternalServerError, NotFound } from "@/lib/HttpErrors";
 import { handleSqlError } from "@/lib/SqlErrors";
-import { engineers } from "@/schemas/sqlite";
+import { employers, engineers } from "@/schemas/sqlite";
 import { Hashing } from "@/services/Hashing";
 import { Jwt } from "@/services/Jwt";
 
@@ -38,8 +38,19 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
           Ef.flatMap(() => jwt.sign({ email: payload.email })),
           Ef.map((token) => ({ token })),
           Ef.catchTags({
-            SqlError: handleSqlError,
+            SqlError: () => new InternalServerError({ message: "something went wrong" }),
             JwtError: () => new InternalServerError({ message: "something went wrong" }),
+          }),
+        ),
+      )
+      .handle("register as employer", ({ payload }) =>
+        pipe(
+          hash(payload.password),
+          Ef.tap((password) => db.insert(employers).values({ ...payload, password })),
+          Ef.andThen({ ...payload }),
+          Ef.catchTags({
+            SqlError: handleSqlError,
+            HashingError: () => new InternalServerError({ message: "something went wrong" }),
           }),
         ),
       );
