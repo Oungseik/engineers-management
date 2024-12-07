@@ -1,8 +1,8 @@
 import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "@effect/platform";
 import { Schema as S } from "effect";
 
+import { SKILL_TAGS } from "@/Domain";
 import { InternalServerError, UnprocessableContent } from "@/lib/HttpErrors";
-import { SKILL_TAGS } from "@/schemas/sqlite";
 
 const Skill = S.Struct({
   name: S.NonEmptyString,

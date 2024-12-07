@@ -1,14 +1,13 @@
 import * as D from "drizzle-orm/sqlite-core";
 
-export const SKILL_TAGS = ["programming language", "framework", "dev-tool"] as const;
-export const ROLES = ["ENGINEER", "EMPLOYER", "ADMIN"] as const;
+import { SKILL_TAGS, USER_ROLES } from "@/Domain";
 
 export const users = D.sqliteTable("users", {
   id: D.integer("id").primaryKey({ autoIncrement: true }),
   name: D.text("name").notNull(),
   email: D.text("email").unique().notNull(),
   password: D.text("password").notNull(),
-  role: D.text("role", { enum: ROLES }).notNull(),
+  role: D.text("role", { enum: USER_ROLES }).notNull(),
   profilePic: D.blob("profile_picture", { mode: "buffer" }),
 });
 
