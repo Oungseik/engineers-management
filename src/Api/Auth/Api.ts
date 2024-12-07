@@ -1,8 +1,8 @@
 import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "@effect/platform";
 import { Schema as S } from "effect";
 
-import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
 import { Email, Password } from "@/Domain";
+import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
 
 const registerEngineerEndpoint = HttpApiEndpoint.post("register engineer", "/engineers/register")
   .setPayload(
