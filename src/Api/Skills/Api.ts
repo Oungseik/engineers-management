@@ -2,11 +2,11 @@ import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "@effect/platform";
 import { Schema as S } from "effect";
 
 import { InternalServerError, UnprocessableContent } from "@/lib/HttpErrors";
-import { skillTags } from "@/schemas/sqlite";
+import { SKILL_TAGS } from "@/schemas/sqlite";
 
 const Skill = S.Struct({
   name: S.NonEmptyString,
-  tag: S.Literal(...skillTags),
+  tag: S.Literal(...SKILL_TAGS),
 });
 
 const getSkills = HttpApiEndpoint.get("get list of skills", "/")
@@ -20,7 +20,7 @@ const getSkills = HttpApiEndpoint.get("get list of skills", "/")
   );
 
 const postSkill = HttpApiEndpoint.post("add new skill in a skill list", "/")
-  .setPayload(S.Struct({ name: S.NonEmptyString, tag: S.Literal(...skillTags) }))
+  .setPayload(S.Struct({ name: S.NonEmptyString, tag: S.Literal(...SKILL_TAGS) }))
   .addSuccess(S.Struct({ success: S.Literal(true) }))
   .addError(UnprocessableContent)
   .addError(InternalServerError)
