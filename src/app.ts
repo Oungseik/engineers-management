@@ -5,7 +5,7 @@ import { Argon2HashingLive } from "@/services/Hashing";
 import { JwtLive } from "@/services/Jwt";
 
 import { ApiLive } from "./Api";
-import { UserAuthorizationLive } from "./Middlewares";
+import { EngineerAuthorizationLive, UserAuthorizationLive } from "./Middlewares";
 
 export const HttpLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
   Layer.provide(HttpApiSwagger.layer({ path: "/docs" })),
@@ -14,6 +14,7 @@ export const HttpLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
   Layer.provide(ApiLive),
   HttpServer.withLogAddress,
   Layer.provide(UserAuthorizationLive),
+  Layer.provide(EngineerAuthorizationLive),
   Layer.provide(Argon2HashingLive),
   Layer.provide(JwtLive),
 );

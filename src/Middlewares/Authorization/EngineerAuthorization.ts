@@ -23,7 +23,7 @@ export class EngineerAuthorization extends HttpApiMiddleware.Tag<EngineerAuthori
 export const EngineerAuthorizationLive = L.effect(
   EngineerAuthorization,
   Ef.gen(function* () {
-    yield* Ef.log("creating employer Authorization middleware");
+    yield* Ef.log("creating Engineer Authorization middleware");
     const { verify } = yield* Jwt;
     const db = yield* SqliteDrizzle;
 
