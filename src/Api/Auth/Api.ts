@@ -2,14 +2,14 @@ import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "@effect/platform";
 import { Schema as S } from "effect";
 
 import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
-import { Email } from "@/Domain/Email";
+import { Email, Password } from "@/Domain";
 
 const registerEngineerEndpoint = HttpApiEndpoint.post("register engineer", "/engineers/register")
   .setPayload(
     S.Struct({
       name: S.NonEmptyString,
       email: Email,
-      password: S.NonEmptyString,
+      password: Password,
       nationality: S.String,
     }),
   )
@@ -24,7 +24,7 @@ const registerEngineerEndpoint = HttpApiEndpoint.post("register engineer", "/eng
   );
 
 const loginEngineerEndpoint = HttpApiEndpoint.post("log-in engineer", "/engineers/login")
-  .setPayload(S.Struct({ email: Email, password: S.NonEmptyString }))
+  .setPayload(S.Struct({ email: Email, password: Password }))
   .addSuccess(S.Struct({ token: S.String }))
   .addError(NotFound)
   .addError(UnprocessableContent)
@@ -41,7 +41,7 @@ const registerEmployerEndpoint = HttpApiEndpoint.post("register as employer", "/
     S.Struct({
       name: S.NonEmptyString,
       email: Email,
-      password: S.NonEmptyString,
+      password: Password,
       org: S.NonEmptyString,
       position: S.NonEmptyString,
     }),
@@ -57,7 +57,7 @@ const registerEmployerEndpoint = HttpApiEndpoint.post("register as employer", "/
   );
 
 const loginEmployerEndpoint = HttpApiEndpoint.post("login as employer", "/employers/login")
-  .setPayload(S.Struct({ email: Email, password: S.NonEmptyString }))
+  .setPayload(S.Struct({ email: Email, password: Password }))
   .addSuccess(S.Struct({ token: S.String }))
   .addError(NotFound)
   .addError(UnprocessableContent)
