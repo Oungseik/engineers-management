@@ -36,13 +36,14 @@ const loginEngineerEndpoint = HttpApiEndpoint.post("log-in engineer", "/engineer
     }),
   );
 
-const registerEmployerEndpoint = HttpApiEndpoint.post("register as employer", "/employer/register")
+const registerEmployerEndpoint = HttpApiEndpoint.post("register as employer", "/employers/register")
   .setPayload(
     S.Struct({
       name: S.NonEmptyString,
       email: Email,
       password: S.NonEmptyString,
-      organization: S.NonEmptyString,
+      org: S.NonEmptyString,
+      position: S.NonEmptyString,
     }),
   )
   .addSuccess(S.Struct({ name: S.NonEmptyString, email: Email }))
@@ -54,10 +55,25 @@ const registerEmployerEndpoint = HttpApiEndpoint.post("register as employer", "/
       description: "API endpoint to create account as an employer",
     }),
   );
+
+const loginEmployerEndpoint = HttpApiEndpoint.post("login as employer", "/employers/login")
+  .setPayload(S.Struct({ email: Email, password: S.NonEmptyString }))
+  .addSuccess(S.Struct({ token: S.String }))
+  .addError(NotFound)
+  .addError(UnprocessableContent)
+  .addError(InternalServerError)
+  .annotateContext(
+    OpenApi.annotations({
+      title: "Log-in Employer",
+      description: "API endpoint to login as an employer.",
+    }),
+  );
+
 export const AuthApi = HttpApiGroup.make("authentication")
   .add(registerEngineerEndpoint)
   .add(loginEngineerEndpoint)
   .add(registerEmployerEndpoint)
+  .add(loginEmployerEndpoint)
   .prefix("/api/auth")
   .annotateContext(
     OpenApi.annotations({
