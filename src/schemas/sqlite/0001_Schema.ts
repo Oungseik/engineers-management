@@ -1,7 +1,6 @@
 import * as D from "drizzle-orm/sqlite-core";
 
-const USER_ROLES = ["ENGINEER", "EMPLOYER", "ADMIN"] as const;
-export const SKILL_TAGS = ["programming language", "framework", "dev-tool"] as const;
+import { SKILL_TAGS,USER_ROLES } from "@/Domain";
 
 export const users = D.sqliteTable("users", {
   name: D.text("name").notNull(),
