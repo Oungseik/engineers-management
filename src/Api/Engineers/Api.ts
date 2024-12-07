@@ -2,7 +2,7 @@ import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, Multipart, OpenApi } from
 import { Schema as S } from "effect";
 
 import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
-import { Authorization } from "@/Middlewares";
+import { EngineerAuthorization } from "@/Middlewares";
 
 const Engineer = S.Struct({
   name: S.NonEmptyString,
@@ -16,6 +16,7 @@ const getMeEndpoint = HttpApiEndpoint.get("get self info", "/me")
   .addSuccess(Engineer)
   .addError(NotFound)
   .addError(InternalServerError)
+  .middleware(EngineerAuthorization)
   .annotateContext(
     OpenApi.annotations({
       title: "self info",
@@ -35,6 +36,7 @@ const updateMeEndpoint = HttpApiEndpoint.post("update self info", "/me")
   .addSuccess(S.Struct({ success: S.Boolean }))
   .addError(NotFound)
   .addError(InternalServerError)
+  .middleware(EngineerAuthorization)
   .annotateContext(
     OpenApi.annotations({
       title: "update self info",
@@ -46,6 +48,7 @@ const uploadProfileEndpoint = HttpApiEndpoint.post("upload profile picture", "/m
   .setPayload(HttpApiSchema.Multipart(S.Struct({ files: Multipart.FilesSchema })))
   .addSuccess(S.Struct({ success: S.Literal(true) }))
   .addError(InternalServerError)
+  .middleware(EngineerAuthorization)
   .annotateContext(
     OpenApi.annotations({
       title: "upload profile pic",
@@ -58,6 +61,7 @@ const getSkillsEndpoint = HttpApiEndpoint.get("get list of added skills", "/me/s
     S.Array(S.Struct({ name: S.NonEmptyString, tag: S.NonEmptyString, yearsOfExp: S.Number })),
   )
   .addError(InternalServerError)
+  .middleware(EngineerAuthorization)
   .annotateContext(
     OpenApi.annotations({
       title: "get added skills list",
@@ -70,6 +74,7 @@ const addSkillsEndpoint = HttpApiEndpoint.post("add new skill in self skill list
   .addSuccess(S.Struct({ success: S.Literal(true) }))
   .addError(UnprocessableContent)
   .addError(InternalServerError)
+  .middleware(EngineerAuthorization)
   .annotateContext(
     OpenApi.annotations({
       title: "add skill",
@@ -83,7 +88,6 @@ export const EngineersApi = HttpApiGroup.make("engineers")
   .add(uploadProfileEndpoint)
   .add(getSkillsEndpoint)
   .add(addSkillsEndpoint)
-  .middleware(Authorization)
   .prefix("/api/engineers")
   .annotateContext(
     OpenApi.annotations({
