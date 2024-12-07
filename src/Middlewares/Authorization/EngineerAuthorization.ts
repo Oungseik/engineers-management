@@ -9,7 +9,7 @@ import { Jwt } from "@/services/Jwt";
 
 import { User } from ".";
 
-export class CurrentEngineer extends C.Tag("CurrentEmployer")<CurrentEngineer, User>() {}
+export class CurrentEngineer extends C.Tag("CurrentEngineer")<CurrentEngineer, User>() {}
 
 export class EngineerAuthorization extends HttpApiMiddleware.Tag<EngineerAuthorization>()(
   "EngineerAuthorization",

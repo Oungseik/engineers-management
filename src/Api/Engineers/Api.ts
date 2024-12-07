@@ -4,7 +4,7 @@ import { Schema as S } from "effect";
 import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
 import { EngineerAuthorization } from "@/Middlewares";
 
-const Engineer = S.Struct({
+export const SelfInfo = S.Struct({
   name: S.NonEmptyString,
   email: S.NonEmptyString,
   nationality: S.NonEmptyString,
@@ -13,7 +13,7 @@ const Engineer = S.Struct({
 });
 
 const getMeEndpoint = HttpApiEndpoint.get("get self info", "/me")
-  .addSuccess(Engineer)
+  .addSuccess(SelfInfo)
   .addError(NotFound)
   .addError(InternalServerError)
   .middleware(EngineerAuthorization)
@@ -28,7 +28,6 @@ const updateMeEndpoint = HttpApiEndpoint.post("update self info", "/me")
   .setPayload(
     S.Struct({
       name: S.NonEmptyString.pipe(S.optional),
-      email: S.NonEmptyString.pipe(S.optional),
       nationality: S.NonEmptyString.pipe(S.optional),
       selfIntro: S.NonEmptyString.pipe(S.optional),
     }),
@@ -70,7 +69,7 @@ const getSkillsEndpoint = HttpApiEndpoint.get("get list of added skills", "/me/s
   );
 
 const addSkillsEndpoint = HttpApiEndpoint.post("add new skill in self skill list", "/me/skills/add")
-  .setPayload(S.Struct({ skillId: S.Number, yearsOfExp: S.Number }))
+  .setPayload(S.Struct({ skillName: S.String, yearsOfExp: S.Number }))
   .addSuccess(S.Struct({ success: S.Literal(true) }))
   .addError(UnprocessableContent)
   .addError(InternalServerError)

@@ -45,7 +45,7 @@ export const experiences = D.sqliteTable(
     engineerEmail: D.text("engineer_email")
       .notNull()
       .references(() => engineers.userEmail),
-    skillName: D.integer("skill_name")
+    skillName: D.text("skill_name")
       .notNull()
       .references(() => skills.name),
   },
