@@ -1,34 +1,45 @@
----
-title: Order example
----
-
 ```mermaid
 erDiagram
 
-    ENGINEERS || -- o{ EXPERIENCES : ""
-    EXPERIENCES |o -- || SKILLS : "has"
+USERS       || -- ||    EMPLOYERS : is
+USERS       || -- ||    ENGINEERS : is
+USERS       || -- ||    ADMINS : is
+ENGINEERS   || -- o{    EXPERIENCES : has
+EXPERIENCES }o -- || SKILLS     : of
 
 
-    ENGINEERS {
-        int     id              PK
-        string  name
-        string  email
-        string  password
-        string  nationality
-        buffer  profile_picture
-        string  self_info
-    }
+USERS {
+    text        name
+    text        email
+    text        password
+    text        role
+    blob        profilePic
+}
 
-    SKILLS {
-        int     id              PK
-        string  name
-        string  tag
-    }
+EMPLOYERS {
+    text    userEmail   pk
+    text    org
+    text    position
+}
 
-    EXPERIENCES {
-        int     id              PK
-        number  years_of_exp
+ENGINEERS {
+    text    userEmail   pk
+    text    nationality
+    text    selfIntro
+}
 
-    }
+ADMINS {
+    text userEmail
+}
 
+SKILLS {
+    text    name    pk
+    text    tag     
+}
+
+EXPERIENCES {
+    int     yearsOfExp
+    text    engineerEmail
+    text    skillName
+}
 ```
