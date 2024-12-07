@@ -24,7 +24,7 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
         pipe(
           hash(payload.password),
           Ef.tap((password) => db.insert(users).values({ ...payload, password, role: "ENGINEER" })),
-          Ef.tap(() => db.insert(engineers).values({ userEmail: payload.email })),
+          Ef.tap(() => db.insert(engineers).values({ ...payload, userEmail: payload.email })),
           Ef.andThen({ ...payload }),
           Ef.catchTags({
             SqlError: handleSqlError,

@@ -8,6 +8,7 @@ import { users } from "@/schemas/sqlite";
 import { Jwt } from "@/services/Jwt";
 
 import { User } from ".";
+import { EngineersApi } from "@/Api/Engineers";
 
 export class CurrentEngineer extends C.Tag("CurrentEngineer")<CurrentEngineer, User>() {}
 
@@ -49,10 +50,9 @@ export const EngineerAuthorizationLive = L.effect(
             Ef.mapError(() => new Unauthorized({ message: "invalid token" })),
           );
 
-          yield* Ef.if(user.role !== "ENGINEER", {
-            onFalse: () => new Unauthorized({ message: "user is not an 'Engineer'" }),
-            onTrue: () => Ef.void,
-          });
+          if (user.role !== "ENGINEER") {
+            yield* new Unauthorized({ message: "user is not an 'Engineer'" });
+          }
 
           return new User({ email: user.email });
         }),

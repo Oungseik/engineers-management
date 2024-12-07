@@ -49,10 +49,9 @@ export const AdminAuthorizationLive = L.effect(
             Ef.mapError(() => new Unauthorized({ message: "invalid token" })),
           );
 
-          yield* Ef.if(user.role !== "ADMIN", {
-            onFalse: () => new Unauthorized({ message: "user is not an 'Admin'" }),
-            onTrue: () => Ef.void,
-          });
+          if (user.role !== "ADMIN") {
+            yield* new Unauthorized({ message: "User is not an 'Employer'" });
+          }
 
           return new User({ email: user.email });
         }),

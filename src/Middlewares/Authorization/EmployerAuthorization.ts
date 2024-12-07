@@ -49,10 +49,9 @@ export const EmployerAuthorizationLive = L.effect(
             Ef.mapError(() => new Unauthorized({ message: "invalid token" })),
           );
 
-          yield* Ef.if(user.role !== "EMPLOYER", {
-            onFalse: () => new Unauthorized({ message: "User is not an 'Employer'" }),
-            onTrue: () => Ef.void,
-          });
+          if (user.role !== "EMPLOYER") {
+            yield* new Unauthorized({ message: "User is not an 'Employer'" });
+          }
 
           return new User({ email: user.email });
         }),
