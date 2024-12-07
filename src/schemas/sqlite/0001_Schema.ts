@@ -23,6 +23,8 @@ export const engineers = D.sqliteTable("engineers", {
   userEmail: D.text("user_email")
     .primaryKey()
     .references(() => users.email, { onDelete: "cascade" }),
+  nationality: D.text("nationality").notNull(),
+  selfIntro: D.text("self_introduction"),
 });
 
 export const admins = D.sqliteTable("admins", {
