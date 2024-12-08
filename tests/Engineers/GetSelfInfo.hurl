@@ -1,7 +1,7 @@
 POST http://localhost:{{port}}/api/auth/engineers/login
 {
-  "email": "oung@gmail.com",
-  "password": "hello, world"
+  "email": "{{engineer_email}}",
+  "password": "{{password}}"
 }
 HTTP 200
 [Captures]
