@@ -1,4 +1,4 @@
-POST http://localhost:{{port}}/api/auth/engineers/login
+POST {{server_url}}/api/auth/engineers/login
 {
   "email": "{{engineer_email}}",
   "password": "{{password}}"
@@ -8,6 +8,6 @@ HTTP 200
 token: jsonpath "$.token"
 
 
-GET http://localhost:{{port}}/api/engineers/me
+GET {{server_url}}/api/engineers/me
 Authorization: Bearer {{token}}
 HTTP 200

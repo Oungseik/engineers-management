@@ -1,4 +1,4 @@
-POST http://localhost:{{port}}/api/auth/engineers/register
+POST {{server_url}}/api/auth/engineers/register
 {
   "name": "{{engineer_name}}",
   "email": "{{engineer_email}}",
@@ -8,7 +8,7 @@ POST http://localhost:{{port}}/api/auth/engineers/register
 HTTP 200
 
 
-POST http://localhost:{{port}}/api/auth/engineers/login
+POST {{server_url}}/api/auth/engineers/login
 {
   "email": "{{engineer_email}}",
   "password": "{{password}}"
@@ -18,7 +18,7 @@ HTTP 200
 token: jsonpath "$.token"
 
 
-DELETE http://localhost:{{port}}/api/auth/engineers
+DELETE {{server_url}}/api/auth/engineers
 Authorization: Bearer {{token}}
 {
   "password": "{{password}}"
