@@ -3,6 +3,7 @@ import { Schema as S } from "effect";
 
 import { SKILL_TAGS } from "@/Domain";
 import { InternalServerError, UnprocessableContent } from "@/lib/HttpErrors";
+import { AdminAuthorization } from "@/Middlewares";
 
 const Skill = S.Struct({
   name: S.NonEmptyString,
@@ -24,6 +25,7 @@ const postSkill = HttpApiEndpoint.post("add new skill in a skill list", "/")
   .addSuccess(S.Struct({ success: S.Literal(true) }))
   .addError(UnprocessableContent)
   .addError(InternalServerError)
+  .middleware(AdminAuthorization)
   .annotateContext(
     OpenApi.annotations({
       title: "Add Skill",
