@@ -1,3 +1,4 @@
+# register an account
 POST {{server_url}}/api/auth/engineers/register
 {
   "name": "{{engineer_name}}",
@@ -8,6 +9,8 @@ POST {{server_url}}/api/auth/engineers/register
 HTTP 200
 
 
+# ------------------------------------------------------------
+# register an account with already used email
 POST {{server_url}}/api/auth/engineers/register
 {
   "name": "{{engineer_name}}",
@@ -18,6 +21,8 @@ POST {{server_url}}/api/auth/engineers/register
 HTTP 422
 
 
+# ------------------------------------------------------------
+# register an account with invalid field
 POST {{server_url}}/api/auth/engineers/register
 {
   "name": "{{engineer_name}}",
@@ -30,6 +35,8 @@ HTTP 400
 jsonpath "$.issues[0].path[0]" == "password" 
 
 
+# ------------------------------------------------------------
+# login an account and store the token, then delete the account as a clean-up process
 POST {{server_url}}/api/auth/engineers/login
 {
   "email": "{{engineer_email}}",
@@ -38,7 +45,6 @@ POST {{server_url}}/api/auth/engineers/login
 HTTP 200
 [Captures]
 token: jsonpath "$.token"
-
 
 DELETE {{server_url}}/api/auth
 Authorization: Bearer {{token}}
