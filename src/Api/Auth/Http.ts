@@ -3,8 +3,9 @@ import { SqliteDrizzle } from "@effect/sql-drizzle/Sqlite";
 import { eq } from "drizzle-orm";
 import { Effect as Ef, pipe } from "effect";
 
-import { InternalServerError, NotFound } from "@/lib/HttpErrors";
+import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
 import { handleSqlError } from "@/lib/SqlErrors";
+import { CurrentUser } from "@/Middlewares";
 import { employers, engineers, users } from "@/schemas/sqlite";
 import { Hashing } from "@/services/Hashing";
 import { Jwt } from "@/services/Jwt";
@@ -17,7 +18,7 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
   Ef.gen(function* () {
     const db = yield* SqliteDrizzle;
     const jwt = yield* Jwt;
-    const { hash } = yield* Hashing;
+    const { hash, verify } = yield* Hashing;
 
     return handlers
       .handle("register engineer", ({ payload }) =>
@@ -65,6 +66,23 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
           Ef.catchTags({
             SqlError: () => new InternalServerError({ message: "something went wrong" }),
             JwtError: () => new InternalServerError({ message: "something went wrong" }),
+          }),
+        ),
+      )
+      .handle("delete account", ({ payload }) =>
+        pipe(
+          CurrentUser,
+          Ef.flatMap((user) => db.select().from(users).where(eq(users.email, user.email)).limit(1)),
+          Ef.flatMap((result) => Ef.fromNullable(result.at(0))),
+          Ef.tap((user) => verify(user.password, payload.password)),
+          Ef.tap((user) => db.delete(users).where(eq(users.email, user.email))),
+          Ef.andThen({ status: true as const }),
+          Ef.catchTags({
+            NoSuchElementException: () => new NotFound({ message: "user does not exist" }),
+            SqlError: () => new InternalServerError({ message: "something went wrong" }),
+            HashNotMatchError: () =>
+              new UnprocessableContent({ message: "password does not match" }),
+            HashingError: () => new InternalServerError({ message: "something went wrong" }),
           }),
         ),
       );

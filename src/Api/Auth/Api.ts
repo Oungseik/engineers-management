@@ -3,6 +3,7 @@ import { Schema as S } from "effect";
 
 import { Email, Password } from "@/Domain";
 import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
+import { UserAuthorization } from "@/Middlewares";
 
 const registerEngineerEndpoint = HttpApiEndpoint.post("register engineer", "/engineers/register")
   .setPayload(
@@ -69,11 +70,26 @@ const loginEmployerEndpoint = HttpApiEndpoint.post("login as employer", "/employ
     }),
   );
 
+const deleteAccount = HttpApiEndpoint.del("delete account", "/")
+  .setPayload(S.Struct({ password: S.String }))
+  .addSuccess(S.Struct({ status: S.Literal(true) }))
+  .addError(NotFound)
+  .addError(UnprocessableContent)
+  .addError(InternalServerError)
+  .middleware(UserAuthorization)
+  .annotateContext(
+    OpenApi.annotations({
+      title: "Delete account",
+      description: "API endpoint to delete account of all types.",
+    }),
+  );
+
 export const AuthApi = HttpApiGroup.make("authentication")
   .add(registerEngineerEndpoint)
   .add(loginEngineerEndpoint)
   .add(registerEmployerEndpoint)
   .add(loginEmployerEndpoint)
+  .add(deleteAccount)
   .prefix("/api/auth")
   .annotateContext(
     OpenApi.annotations({
