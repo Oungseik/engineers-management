@@ -16,7 +16,8 @@ export function getSqlErrorCode(e: SqlError.SqlError): SqlErrorCode {
 }
 
 export function handleSqlError(e: SqlError.SqlError) {
-  return isRecord(e.cause) && e.cause.code === "SQLITE_CONSTRAINT_UNIQUE"
+  return isRecord(e.cause) &&
+    (e.cause.code === "SQLITE_CONSTRAINT_UNIQUE" || e.cause.code === "SQLITE_CONSTRAINT_PRIMARYKEY")
     ? new UnprocessableContent({ message: "voilate unique constraint" })
     : new InternalServerError({ message: "something went wrong" });
 }
