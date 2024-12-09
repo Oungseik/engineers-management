@@ -15,7 +15,7 @@ import { AuthApi } from "./Api";
 const Api = HttpApi.empty.add(AuthApi);
 
 export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers) =>
-  Ef.gen(function* () {
+  Ef.gen(function*() {
     const db = yield* SqliteDrizzle;
     const jwt = yield* Jwt;
     const { hash, verify } = yield* Hashing;
@@ -27,6 +27,7 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
           Ef.tap((password) => db.insert(users).values({ ...payload, password, role: "ENGINEER" })),
           Ef.tap(() => db.insert(engineers).values({ ...payload, userEmail: payload.email })),
           Ef.andThen({ ...payload }),
+          Ef.tapError(Ef.logError),
           Ef.catchTags({
             SqlError: handleSqlError,
             HashingError: () => new InternalServerError({ message: "something went wrong" }),
@@ -69,12 +70,14 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
           }),
         ),
       )
-      .handle("delete account", ({ payload }) =>
+      .handle("delete engineers account", ({ payload }) =>
         pipe(
           CurrentUser,
           Ef.flatMap((user) => db.select().from(users).where(eq(users.email, user.email)).limit(1)),
           Ef.flatMap((result) => Ef.fromNullable(result.at(0))),
           Ef.tap((user) => verify(user.password, payload.password)),
+          Ef.tap((user) => db.delete(engineers).where(eq(engineers.userEmail, user.email))),
+          // TODO - delete this line after set the client.pragma('foreign_keys = ON');
           Ef.tap((user) => db.delete(users).where(eq(users.email, user.email))),
           Ef.andThen({ status: true as const }),
           Ef.catchTags({

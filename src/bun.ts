@@ -15,7 +15,7 @@ const SqlLive = config.pipe(
 const DrizzleLive = SqliteDrizzle.layer.pipe(Layer.provide(SqlLive));
 const SqliteDbLive = Layer.mergeAll(SqlLive, DrizzleLive);
 
-const bunServer = Effect.gen(function* () {
+const bunServer = Effect.gen(function*() {
   const { port } = yield* config;
   return HttpLive.pipe(Layer.provide(SqliteDbLive), Layer.provide(BunHttpServer.layer({ port })));
 });
