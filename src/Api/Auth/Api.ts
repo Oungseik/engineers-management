@@ -70,7 +70,7 @@ const loginEmployerEndpoint = HttpApiEndpoint.post("login as employer", "/employ
     }),
   );
 
-const deleteAccount = HttpApiEndpoint.del("delete engineers account", "/engineers")
+const deleteAccount = HttpApiEndpoint.del("delete account", "/")
   .setPayload(S.Struct({ password: S.String }))
   .addSuccess(S.Struct({ status: S.Literal(true) }))
   .addError(NotFound)
@@ -79,8 +79,8 @@ const deleteAccount = HttpApiEndpoint.del("delete engineers account", "/engineer
   .middleware(UserAuthorization)
   .annotateContext(
     OpenApi.annotations({
-      title: "Delete engineers account",
-      description: "API endpoint to delete account of engineers.",
+      title: "Delete account",
+      description: "API endpoint to delete all kind of account.",
     }),
   );
 

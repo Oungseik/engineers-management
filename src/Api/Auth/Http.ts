@@ -6,7 +6,7 @@ import { Effect as Ef, pipe } from "effect";
 import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
 import { handleSqlError } from "@/lib/SqlErrors";
 import { CurrentUser } from "@/Middlewares";
-import { employers, engineers, users } from "@/schemas/sqlite";
+import { admins, employers, engineers, users } from "@/schemas/sqlite";
 import { Hashing } from "@/services/Hashing";
 import { Jwt } from "@/services/Jwt";
 
@@ -70,13 +70,19 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
           }),
         ),
       )
-      .handle("delete engineers account", ({ payload }) =>
+      .handle("delete account", ({ payload }) =>
         pipe(
           CurrentUser,
           Ef.flatMap((user) => db.select().from(users).where(eq(users.email, user.email)).limit(1)),
           Ef.flatMap((result) => Ef.fromNullable(result.at(0))),
           Ef.tap((user) => verify(user.password, payload.password)),
-          Ef.tap((user) => db.delete(engineers).where(eq(engineers.userEmail, user.email))),
+          Ef.tap((user) =>
+            user.role === "ENGINEER"
+              ? db.delete(engineers).where(eq(engineers.userEmail, user.email))
+              : user.role === "EMPLOYER"
+                ? db.delete(employers).where(eq(employers.userEmail, user.email))
+                : db.delete(admins).where(eq(admins.userEmail, user.email)),
+          ),
           // TODO - delete this line after set the client.pragma('foreign_keys = ON');
           Ef.tap((user) => db.delete(users).where(eq(users.email, user.email))),
           Ef.andThen({ status: true as const }),

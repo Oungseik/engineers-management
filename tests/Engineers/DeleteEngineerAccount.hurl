@@ -18,7 +18,7 @@ HTTP 200
 token: jsonpath "$.token"
 
 
-DELETE {{server_url}}/api/auth/engineers
+DELETE {{server_url}}/api/auth
 Authorization: Bearer {{token}}
 {
   "password": "{{password}}"
