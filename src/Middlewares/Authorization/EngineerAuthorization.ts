@@ -8,7 +8,6 @@ import { users } from "@/schemas/sqlite";
 import { Jwt } from "@/services/Jwt";
 
 import { User } from ".";
-import { EngineersApi } from "@/Api/Engineers";
 
 export class CurrentEngineer extends C.Tag("CurrentEngineer")<CurrentEngineer, User>() {}
 
