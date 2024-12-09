@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "build": "tsup",
-    "dev:bun": "bun run src/bun.ts",
-    "dev:node": "tsx --env-file=.env src/node.ts",
-    "serve:node": "node dist/node.cjs",
+    "dev-bun": "bun run src/bun.ts",
+    "dev-node": "tsx --env-file=.env src/node.ts",
+    "serve-node": "node dist/node.cjs",
     "format": "prettier -w ./src",
     "lint": "eslint",
     "generate": "drizzle-kit generate",
