@@ -25,7 +25,7 @@ const registerEngineerEndpoint = HttpApiEndpoint.post("register engineer", "/eng
   );
 
 const loginEngineerEndpoint = HttpApiEndpoint.post("log-in engineer", "/engineers/login")
-  .setPayload(S.Struct({ email: Email, password: Password }))
+  .setPayload(S.Struct({ email: Email, password: S.String }))
   .addSuccess(S.Struct({ token: S.String }))
   .addError(NotFound)
   .addError(UnprocessableContent)
@@ -58,7 +58,7 @@ const registerEmployerEndpoint = HttpApiEndpoint.post("register as employer", "/
   );
 
 const loginEmployerEndpoint = HttpApiEndpoint.post("login as employer", "/employers/login")
-  .setPayload(S.Struct({ email: Email, password: Password }))
+  .setPayload(S.Struct({ email: Email, password: S.String }))
   .addSuccess(S.Struct({ token: S.String }))
   .addError(NotFound)
   .addError(UnprocessableContent)
