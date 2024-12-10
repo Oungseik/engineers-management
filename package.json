@@ -18,7 +18,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/bun": "^1.1.14",
     "@types/jsonwebtoken": "^9.0.7",
-    "better-sqlite3": "^11.6.0",
+    "better-sqlite3": "^11.7.0",
     "drizzle-kit": "^0.29.1",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",
@@ -29,25 +29,25 @@
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.17.0"
+    "typescript-eslint": "^8.18.0"
   },
   "peerDependencies": {
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "@effect/experimental": "^0.33.4",
-    "@effect/platform": "^0.70.4",
-    "@effect/platform-bun": "^0.50.4",
-    "@effect/platform-node": "^0.65.4",
-    "@effect/sql": "^0.22.4",
-    "@effect/sql-drizzle": "^0.21.4",
-    "@effect/sql-sqlite-bun": "^0.23.4",
-    "@effect/sql-sqlite-node": "^0.23.4",
+    "@effect/experimental": "^0.33.6",
+    "@effect/platform": "^0.70.6",
+    "@effect/platform-bun": "^0.50.6",
+    "@effect/platform-node": "^0.65.6",
+    "@effect/sql": "^0.22.6",
+    "@effect/sql-drizzle": "^0.21.6",
+    "@effect/sql-sqlite-bun": "^0.23.6",
+    "@effect/sql-sqlite-node": "^0.23.6",
     "argon2": "^0.41.1",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.37.0",
-    "effect": "^3.11.3",
+    "effect": "^3.11.4",
     "jsonwebtoken": "^9.0.2"
   }
 }
