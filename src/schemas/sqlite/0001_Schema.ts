@@ -1,6 +1,7 @@
+import { relations } from "drizzle-orm";
 import * as D from "drizzle-orm/sqlite-core";
 
-import { SKILL_TAGS,USER_ROLES } from "@/Domain";
+import { SKILL_TAGS, USER_ROLES } from "@/Domain";
 
 export const users = D.sqliteTable("users", {
   name: D.text("name").notNull(),
@@ -18,6 +19,10 @@ export const employers = D.sqliteTable("employers", {
   position: D.text("position").notNull(),
 });
 
+export const employersRelations = relations(employers, ({ one }) => ({
+  info: one(users, { fields: [employers.userEmail], references: [users.email] }),
+}));
+
 export const engineers = D.sqliteTable("engineers", {
   userEmail: D.text("user_email")
     .primaryKey()
@@ -26,11 +31,19 @@ export const engineers = D.sqliteTable("engineers", {
   selfIntro: D.text("self_introduction"),
 });
 
+export const engineersRelations = relations(engineers, ({ one }) => ({
+  info: one(users, { fields: [engineers.userEmail], references: [users.email] }),
+}));
+
 export const admins = D.sqliteTable("admins", {
   userEmail: D.text("user_email")
     .primaryKey()
     .references(() => users.email, { onDelete: "cascade" }),
 });
+
+export const adminsRelations = relations(admins, ({ one }) => ({
+  info: one(users, { fields: [admins.userEmail], references: [users.email] }),
+}));
 
 export const skills = D.sqliteTable("skills", {
   name: D.text("name").primaryKey().unique(),
