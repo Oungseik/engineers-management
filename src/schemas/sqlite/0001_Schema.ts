@@ -31,8 +31,9 @@ export const engineers = D.sqliteTable("engineers", {
   selfIntro: D.text("self_introduction"),
 });
 
-export const engineersRelations = relations(engineers, ({ one }) => ({
+export const engineersRelations = relations(engineers, ({ one, many }) => ({
   info: one(users, { fields: [engineers.userEmail], references: [users.email] }),
+  experiences: many(experiences),
 }));
 
 export const admins = D.sqliteTable("admins", {
@@ -50,6 +51,10 @@ export const skills = D.sqliteTable("skills", {
   tag: D.text("tag", { enum: SKILL_TAGS }).notNull(),
 });
 
+export const skillsRelations = relations(skills, ({ many }) => ({
+  experiences: many(experiences),
+}));
+
 export const experiences = D.sqliteTable(
   "experiences",
   {
@@ -63,3 +68,11 @@ export const experiences = D.sqliteTable(
   },
   (table) => ({ pk: D.primaryKey({ columns: [table.engineerEmail, table.skillName] }) }),
 );
+
+export const experiencesRelations = relations(experiences, ({ one }) => ({
+  skill: one(skills, { fields: [experiences.skillName], references: [skills.name] }),
+  engineer: one(engineers, {
+    fields: [experiences.engineerEmail],
+    references: [engineers.userEmail],
+  }),
+}));
