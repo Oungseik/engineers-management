@@ -9,3 +9,5 @@ export const Password = S.String.pipe(
       "A password which must contain at least one uppercase, one lowercase, one number, and no space.",
   }),
 );
+
+export type Password = typeof Password.Type;
