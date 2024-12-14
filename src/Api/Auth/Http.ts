@@ -12,7 +12,7 @@ import { Jwt } from "@/services/Jwt";
 
 import { AuthApi } from "./Api";
 
-const Api = HttpApi.empty.add(AuthApi);
+export const Api = HttpApi.empty.add(AuthApi);
 
 export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers) =>
   Ef.gen(function*() {
