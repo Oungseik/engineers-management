@@ -11,9 +11,11 @@
     "lint": "eslint",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "test": "vitest"
   },
   "devDependencies": {
+    "@effect/vitest": "^0.14.5",
     "@eslint/js": "^9.16.0",
     "@types/bcrypt": "^5.0.2",
     "@types/bun": "^1.1.14",
@@ -29,7 +31,9 @@
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.18.0"
+    "typescript-eslint": "^8.18.0",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "typescript": "^5.6.3"
