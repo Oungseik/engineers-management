@@ -13,7 +13,7 @@ import { EngineersApi, SelfInfo } from "./Api";
 const Api = HttpApi.empty.add(EngineersApi);
 
 export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers) =>
-  Ef.gen(function* () {
+  Ef.gen(function*() {
     const db = yield* SqliteDrizzle;
     const fs = yield* FileSystem.FileSystem;
 
@@ -31,7 +31,7 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
           Ef.map((engineers) => engineers.at(0)),
           Ef.flatMap(Ef.fromNullable),
           Ef.flatMap(({ engineers, users }) =>
-            S.decodeUnknown(SelfInfo)({ ...engineers, ...users }),
+            S.decodeUnknown(SelfInfo)(Object.assign(engineers, users)),
           ),
           Ef.catchTags({
             ParseError: () => new InternalServerError({ message: "incompleted data" }),
@@ -67,7 +67,7 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
         ),
       )
       .handle("get list of added skills", () =>
-        Ef.gen(function* () {
+        Ef.gen(function*() {
           const user = yield* CurrentEngineer;
           const result = yield* db
             .select()
@@ -85,7 +85,7 @@ export const EngineersApiLive = HttpApiBuilder.group(Api, "engineers", (handlers
         }),
       )
       .handle("add new skill in self skill list", ({ payload }) =>
-        Ef.gen(function* () {
+        Ef.gen(function*() {
           const user = yield* CurrentEngineer;
           yield* db
             .insert(experiences)
