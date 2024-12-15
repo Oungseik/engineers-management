@@ -21,7 +21,7 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
     const { hash, verify } = yield* Hashing;
 
     return handlers
-      .handle("register engineer", ({ payload }) =>
+      .handle("registerEngineer", ({ payload }) =>
         pipe(
           hash(payload.password),
           Ef.tap((password) => db.insert(users).values({ ...payload, password, role: "ENGINEER" })),
@@ -34,7 +34,7 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
           }),
         ),
       )
-      .handle("log-in engineer", ({ payload }) =>
+      .handle("loginEngineer", ({ payload }) =>
         pipe(
           db.select().from(users).where(eq(users.email, payload.email)),
           Ef.tap((res) => (res.length > 0 ? Ef.void : new NotFound({ message: "not found" }))),
@@ -46,7 +46,7 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
           }),
         ),
       )
-      .handle("register as employer", ({ payload }) =>
+      .handle("registerEmployer", ({ payload }) =>
         pipe(
           hash(payload.password),
           Ef.tap((password) => db.insert(users).values({ ...payload, password, role: "EMPLOYER" })),
@@ -58,7 +58,7 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
           }),
         ),
       )
-      .handle("login as employer", ({ payload }) =>
+      .handle("loginEmployer", ({ payload }) =>
         pipe(
           db.select().from(employers).where(eq(employers.userEmail, payload.email)),
           Ef.tap((res) => (res.length > 0 ? Ef.void : new NotFound({ message: "not found" }))),
@@ -70,7 +70,7 @@ export const AuthApiLive = HttpApiBuilder.group(Api, "authentication", (handlers
           }),
         ),
       )
-      .handle("delete account", ({ payload }) =>
+      .handle("deleteAccount", ({ payload }) =>
         pipe(
           CurrentUser,
           Ef.flatMap((user) => db.select().from(users).where(eq(users.email, user.email)).limit(1)),

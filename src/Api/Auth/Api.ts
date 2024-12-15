@@ -5,7 +5,7 @@ import { Email, Password } from "@/Domain";
 import { InternalServerError, NotFound, UnprocessableContent } from "@/lib/HttpErrors";
 import { UserAuthorization } from "@/Middlewares";
 
-const registerEngineerEndpoint = HttpApiEndpoint.post("register engineer", "/engineers/register")
+const registerEngineerEndpoint = HttpApiEndpoint.post("registerEngineer", "/engineers/register")
   .setPayload(
     S.Struct({
       name: S.NonEmptyString,
@@ -24,7 +24,7 @@ const registerEngineerEndpoint = HttpApiEndpoint.post("register engineer", "/eng
     }),
   );
 
-const loginEngineerEndpoint = HttpApiEndpoint.post("log-in engineer", "/engineers/login")
+const loginEngineerEndpoint = HttpApiEndpoint.post("loginEngineer", "/engineers/login")
   .setPayload(S.Struct({ email: Email, password: S.String }))
   .addSuccess(S.Struct({ token: S.String }))
   .addError(NotFound)
@@ -37,7 +37,7 @@ const loginEngineerEndpoint = HttpApiEndpoint.post("log-in engineer", "/engineer
     }),
   );
 
-const registerEmployerEndpoint = HttpApiEndpoint.post("register as employer", "/employers/register")
+const registerEmployerEndpoint = HttpApiEndpoint.post("registerEmployer", "/employers/register")
   .setPayload(
     S.Struct({
       name: S.NonEmptyString,
@@ -57,7 +57,7 @@ const registerEmployerEndpoint = HttpApiEndpoint.post("register as employer", "/
     }),
   );
 
-const loginEmployerEndpoint = HttpApiEndpoint.post("login as employer", "/employers/login")
+const loginEmployerEndpoint = HttpApiEndpoint.post("loginEmployer", "/employers/login")
   .setPayload(S.Struct({ email: Email, password: S.String }))
   .addSuccess(S.Struct({ token: S.String }))
   .addError(NotFound)
@@ -70,7 +70,7 @@ const loginEmployerEndpoint = HttpApiEndpoint.post("login as employer", "/employ
     }),
   );
 
-const deleteAccount = HttpApiEndpoint.del("delete account", "/")
+const deleteAccount = HttpApiEndpoint.del("deleteAccount", "/")
   .setPayload(S.Struct({ password: S.String }))
   .addSuccess(S.Struct({ status: S.Literal(true) }))
   .addError(NotFound)
